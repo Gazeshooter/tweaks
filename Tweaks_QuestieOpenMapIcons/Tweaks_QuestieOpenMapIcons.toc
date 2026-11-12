@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffQuestie + OpenMap Icons|r
+## Notes: Keeps Questie world-map markers above OpenMap's stitched art, including during redraws.
+## Version: 1.1.0
+## Group: Tweaks
+## Dependencies: Tweaks, Questie, OpenMap
+## Category: Other
+
+QuestieOpenMapIcons.lua

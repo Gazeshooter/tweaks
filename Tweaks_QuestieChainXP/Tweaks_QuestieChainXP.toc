@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffQuestie Chain XP|r
+## Notes: Shows quest rewards as percentages of your current level and adds total XP for visible Questie chains.
+## Version: 1.2.0
+## Group: Tweaks
+## Dependencies: Tweaks, Questie
+## Category: Other
+
+QuestieChainXP.lua

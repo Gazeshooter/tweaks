@@ -1,0 +1,3 @@
+-- Tweaks parent addon.
+-- Each feature is a separate addon with its own checkbox in the AddOns menu.
+-- No gameplay changes are performed by the parent addon itself.

@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffHide External Tooltip Bar|r
+## Notes: Hides Blizzard's thin health bar below unit tooltips; leaves TipTac's internal bars untouched.
+## Version: 1.2.0
+## Group: Tweaks
+## Dependencies: Tweaks
+## OptionalDeps: TipTac
+## Category: Other
+
+TooltipStatusBar.lua

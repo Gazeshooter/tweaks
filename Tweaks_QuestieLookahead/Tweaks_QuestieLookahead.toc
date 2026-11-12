@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffQuestie Lookahead (+3)|r
+## Notes: Show Questie quest starters unlocked at the next three character levels, with configurable icons and grey unlock tooltips.
+## Version: 1.2.0
+## Group: Tweaks
+## Dependencies: Tweaks, Questie
+## Category: Other
+
+QuestieLookahead.lua

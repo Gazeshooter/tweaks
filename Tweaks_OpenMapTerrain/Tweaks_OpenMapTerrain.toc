@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Tweaks: OpenMap Terrain Only
+## Notes: Optional terrain-only presentation for OpenMap (Look tab).
+## Author: Tweaks
+## Version: 1.0.0
+## Dependencies: Tweaks, OpenMap
+## Group: Tweaks
+## SavedVariables: TweaksOpenMapTerrainDB
+
+Terrain.lua
