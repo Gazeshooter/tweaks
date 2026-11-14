@@ -45,7 +45,7 @@ end
 local function factionName(fid, info)
     -- Keep tooltip labels concise; unknown factions retain their full names.
     local short = ns.ShortFactionNames and ns.ShortFactionNames[fid]
-    if short then return short end
+    if short and db and db.shortNames ~= false then return short end
     local name = info and info.name
     return safe(name) and type(name) == "string" and name
         or ns.FallbackFactionNames[fid] or ("Faction " .. fid)
@@ -186,32 +186,36 @@ local function writeTooltip(tooltip, npc)
     if not db or db.disabled or not npc or not tooltip or not tooltip.AddLine then return end
     local rules = findRules(npc)
     if #rules == 0 and not db.debug then return end
+
     for _, r in ipairs(rules) do
         local info = lookupFaction(r.fid)
         local standing = reaction(info)
-        local name = factionName(r.fid, info)
         local capped = standing and (standing >= r.cap or standing == 8)
-        local amount = capped and 0 or r.amount
+        local noRep = capped or r.amount == 0
+        local mode = db.cappedMode or "hide"
 
-        -- Compact format: +5 Timbermaw (Revered).
-        -- The parenthesis is the FIRST standing at which this NPC stops
-        -- granting reputation, not the player's current standing.
-        -- An unknown cap is deliberately omitted rather than guessed.
-        local sign = amount > 0 and "+" or ""
-        local text = sign .. tostring(amount) .. " " .. name
-        local capName = r.cap < 9 and standingNames[r.cap]
-            or (standing == 8 and "Exalted")
-        if capName then text = text .. " (" .. capName .. ")" end
+        -- Hide when capped by default. "base" explicitly displays the
+        -- historical per-kill value, not the amount currently earned.
+        if not (noRep and mode == "hide") then
+            local amount = (noRep and mode == "zero") and 0 or r.amount
+            local sign = amount > 0 and "+" or ""
+            local text = sign .. tostring(amount) .. " " .. factionName(r.fid, info)
+            -- The cap is the first standing at which this NPC stops paying.
+            -- A missing cap is left out rather than guessed.
+            local capName = r.cap < 9 and standingNames[r.cap]
+                or (standing == 8 and "Exalted")
+            if capName then text = text .. " (" .. capName .. ")" end
 
-        local cr, cg, cb
-        if capped then
-            cr, cg, cb = 0.65, 0.65, 0.65
-        elseif amount < 0 then
-            cr, cg, cb = 0.95, 0.45, 0.45
-        else
-            cr, cg, cb = 0.48, 0.86, 0.52
+            local cr, cg, cb
+            if noRep and mode ~= "base" then
+                cr, cg, cb = 0.65, 0.65, 0.65
+            elseif amount < 0 then
+                cr, cg, cb = 0.95, 0.45, 0.45
+            else
+                cr, cg, cb = 0.48, 0.86, 0.52
+            end
+            tooltip:AddLine(text, cr, cg, cb, true)
         end
-        tooltip:AddLine(text, cr, cg, cb, true)
     end
     if db.debug then
         tooltip:AddLine("MobRep NPC ID: " .. npc, 0.7, 0.7, 0.95)
@@ -247,6 +251,44 @@ local function parseRank(arg)
     end
 end
 
+-- Register with the shared Tweaks parent (Settings > AddOns > Tweaks).
+-- Using RegisterAddOnSetting binds controls directly to the existing
+-- per-character SavedVariables; no reload and no second settings store.
+local function registerNativeSettings()
+    local tweaks = _G.Tweaks
+    if not tweaks or not tweaks.RegisterSettingsSubcategory then return end
+
+    tweaks:RegisterSettingsSubcategory(addonName, "Mob Reputation", function(category)
+        local function addSetting(key, label, default)
+            return Settings.RegisterAddOnSetting(
+                category, "TweaksMobReputation_" .. key, key, db,
+                type(default), label, default)
+        end
+
+        local capped = addSetting("cappedMode", "When kill reputation is capped", "hide")
+        local function capOptions()
+            local container = Settings.CreateControlTextContainer()
+            container:Add("hide", "Hide reputation line",
+                "Default: do not show reputation once the kill stops awarding it.")
+            container:Add("base", "Always show base gain",
+                "Show the original amount even at the reputation cap.")
+            container:Add("zero", "Show zero gain",
+                "Display 0 and the faction name in grey at the cap.")
+            return container:GetData()
+        end
+        Settings.CreateDropdown(category, capped, capOptions,
+            "Choose how the NPC tooltip behaves when reputation can no longer increase.")
+
+        local names = addSetting("shortNames", "Use short faction names", true)
+        Settings.CreateCheckbox(category, names,
+            "For example, Timbermaw instead of Timbermaw Hold.")
+
+        local learn = addSetting("learn", "Learn reputation from solo kills (experimental)", true)
+        Settings.CreateCheckbox(category, learn,
+            "Requires two matching solo observations; may be inaccurate on Forever.")
+    end)
+end
+
 SLASH_TWEAKSMOBREP1 = "/mobrep"
 SlashCmdList.TWEAKSMOBREP = function(input)
     local cmd, rest = (input or ""):match("^%s*(%S*)%s*(.-)%s*$")
@@ -277,6 +319,9 @@ SlashCmdList.TWEAKSMOBREP = function(input)
             db.observed[npc] = nil
             printLine("Cleared personal data for NPC " .. npc .. " (Classic table unchanged)")
         end
+    elseif cmd == "options" then
+        local tweaks = _G.Tweaks
+        if tweaks and tweaks.OpenSettings then tweaks:OpenSettings(addonName) end
     elseif cmd == "status" then
         local count = 0
         for _ in pairs(ns.Vanilla) do count = count + 1 end
@@ -284,7 +329,7 @@ SlashCmdList.TWEAKSMOBREP = function(input)
             .. "; debug " .. (db.debug and "on" or "off"))
         printLine("Last mouseover NPC: " .. tostring(lastSeenNpc or "none"))
     else
-        printLine("/mobrep status | debug [on|off] | learn [on|off]")
+        printLine("/mobrep options | status | debug [on|off] | learn [on|off]")
         printLine("/mobrep add NPC_ID FACTION_ID AMOUNT [capRank|none] | del NPC_ID")
         printLine("Cap rank 7 = stops on Revered. Learn requires two solo observations.")
     end
@@ -300,9 +345,15 @@ eventFrame:SetScript("OnEvent", function(_, event)
         db = TweaksMobReputationDB
         if type(db.manual) ~= "table" then db.manual = {} end
         if type(db.observed) ~= "table" then db.observed = {} end
-        if db.learn == nil then db.learn = true end
+        if type(db.learn) ~= "boolean" then db.learn = true end
+        if type(db.shortNames) ~= "boolean" then db.shortNames = true end
+        if db.cappedMode ~= "hide" and db.cappedMode ~= "base"
+            and db.cappedMode ~= "zero" then
+            db.cappedMode = "hide"
+        end
         refreshFactionIDs()
         snapshots = snapshotFactions()
+        registerNativeSettings()
         if hasTooltipProcessor then
             TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Unit, onUnitTooltip)
         else
