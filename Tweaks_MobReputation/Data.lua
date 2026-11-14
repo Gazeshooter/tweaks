@@ -46,6 +46,13 @@ ns.Vanilla = {
     [15213] = {{609, 1, 6}}, -- Twilight Overlord
     [15201] = {{609, 1, 7}}, -- Twilight Flamereaver (guide: through Honored)
 }
+-- Short labels used exclusively in mob tooltips; faction IDs avoid
+-- ambiguity between similarly named reputations.
+ns.ShortFactionNames = {
+    [576] = "Timbermaw",
+    [529] = "Argent Dawn",
+    [609] = "Cenarion",
+}
 ns.FallbackFactionNames = {
     [576] = "Timbermaw Hold",
     [529] = "Argent Dawn",
