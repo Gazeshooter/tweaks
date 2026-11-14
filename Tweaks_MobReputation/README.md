@@ -9,13 +9,26 @@ Copy `Tweaks_MobReputation/` into `_forever_/Interface/AddOns/`, alongside the i
 ## Examples
 
 - Deadwood Gardener (NPC 7154) while Unfriendly with Timbermaw Hold: `+5 Timbermaw (Revered)`.
-- The same mob at Revered: `0 Timbermaw (Revered)` (grey).
+- The same mob at Revered: reputation line hidden by default (configurable to base amount or grey `0 Timbermaw (Revered)`).
 - Twilight Avenger: `+1 Cenarion (Honored)` until Honored, based on vanilla; other Twilight NPCs may have different limits.
 - The addon displays **base** reputation. Racial bonuses, Forever Legacy perks, special events and server tweaks can affect actual gains.
 
 ## Tooltip format
 
 `+X ShortRepName (ReputationCap)` shows the estimated amount, a compact faction name, and the first standing at which the NPC stops awarding reputation. When already capped, the amount is shown as grey `0`. If no cap has been established, the parentheses are omitted. Source/confidence notes are deliberately excluded from tooltips; Classic values remain estimates.
+
+## Native settings (no reload required)
+
+Go to **Options > AddOns > Tweaks > Mob Reputation**, or enter `/mobrep options`.
+
+- **When kill reputation is capped** (default **Hide reputation line**):
+  - **Hide reputation line:** Once Revered is reached, Deadwood Gardener has no reputation line.
+  - **Always show base gain:** `+5 Timbermaw (Revered)` even when already Revered. This is the **original base value**, not a promise of a current gain.
+  - **Show zero gain:** `0 Timbermaw (Revered)` in grey when already Revered.
+- **Use short faction names** (default on): `Timbermaw`, `Cenarion`; off uses `Timbermaw Hold`, `Cenarion Circle`.
+- **Learn reputation from solo kills (experimental)** (default on): two repeated observations required for an override.
+
+All options are saved per character in `TweaksMobReputationDB`. They take effect on subsequent mouseovers without `/reload`. Enabling/disabling the *module itself* still requires a UI reload. The existing `/mobrep learn` and `/mobrep debug` commands remain supported.
 
 ## Sources, assumptions, caveats
 
@@ -35,7 +48,7 @@ Combat secrecy may prevent GUID access for certain mobs or within instances; no 
 
 ## Commands
 
-- `/mobrep status` — built-in record count, settings and last NPC ID.
+- `/mobrep options` — open the native Mob Reputation settings page.\n- `/mobrep status` — built-in record count, settings and last NPC ID.
 - `/mobrep debug on` — display NPC ID on mouseover for data/reporting.
 - `/mobrep learn off` — disable the cautious observation heuristic.
 - `/mobrep add 7154 576 5 revered` — save a local, per-character override (the optional cap is the **first non-paying standing**).
