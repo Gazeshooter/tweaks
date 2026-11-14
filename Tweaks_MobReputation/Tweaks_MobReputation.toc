@@ -1,0 +1,12 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffMob Reputation|r
+## Notes: Estimated reputation per NPC kill, current-standing caps, and cautious observed gains.
+## Version: 1.0.0
+## Group: Tweaks
+## Dependencies: Tweaks
+## OptionalDeps: TipTac
+## Category: Other
+## SavedVariablesPerCharacter: TweaksMobReputationDB
+
+Data.lua
+MobReputation.lua
