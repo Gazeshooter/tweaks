@@ -48,7 +48,8 @@ Combat secrecy may prevent GUID access for certain mobs or within instances; no 
 
 ## Commands
 
-- `/mobrep options` — open the native Mob Reputation settings page.\n- `/mobrep status` — built-in record count, settings and last NPC ID.
+- `/mobrep options` — open the native Mob Reputation settings page.
+- `/mobrep status` — built-in record count, settings and last NPC ID.
 - `/mobrep debug on` — display NPC ID on mouseover for data/reporting.
 - `/mobrep learn off` — disable the cautious observation heuristic.
 - `/mobrep add 7154 576 5 revered` — save a local, per-character override (the optional cap is the **first non-paying standing**).
