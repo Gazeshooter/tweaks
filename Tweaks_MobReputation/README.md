@@ -8,10 +8,14 @@ Copy `Tweaks_MobReputation/` into `_forever_/Interface/AddOns/`, alongside the i
 
 ## Examples
 
-- Deadwood Gardener (NPC 7154) while Unfriendly with Timbermaw Hold: `Rep: +5 Timbermaw Hold (Classic estimate; until Revered)`.
-- The same mob at Revered: `Timbermaw Hold: no kill rep (cap: Revered)`.
-- Twilight Avenger: +1 Cenarion Circle until Honored, based on vanilla; other Twilight NPCs may have different limits.
+- Deadwood Gardener (NPC 7154) while Unfriendly with Timbermaw Hold: `+5 Timbermaw (Revered)`.
+- The same mob at Revered: `0 Timbermaw (Revered)` (grey).
+- Twilight Avenger: `+1 Cenarion (Honored)` until Honored, based on vanilla; other Twilight NPCs may have different limits.
 - The addon displays **base** reputation. Racial bonuses, Forever Legacy perks, special events and server tweaks can affect actual gains.
+
+## Tooltip format
+
+`+X ShortRepName (ReputationCap)` shows the estimated amount, a compact faction name, and the first standing at which the NPC stops awarding reputation. When already capped, the amount is shown as grey `0`. If no cap has been established, the parentheses are omitted. Source/confidence notes are deliberately excluded from tooltips; Classic values remain estimates.
 
 ## Sources, assumptions, caveats
 
