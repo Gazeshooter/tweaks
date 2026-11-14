@@ -8,6 +8,7 @@ Each `Tweaks_*` directory is a standalone WoW addon with its own `.toc` and chec
 
 | Folder | Function | Extra requirements |
 | --- | --- | --- |
+| `Tweaks_MobReputation` | Shows standing-aware, per-kill mob reputation in tooltips using curated Classic estimates and cautious observed gains | None (TipTac optional) |
 | `Tweaks_OpenMapTerrain` | Adds an optional terrain-only mode under OpenMap → Settings → Look | OpenMap with API v4+ |
 | `Tweaks_QuestieChainXP` | Shows quest XP as a percentage of the current level and total follow-up chain XP in Questie map tooltips | Questie |
 | `Tweaks_QuestieLookahead` | Displays quest starters unlocked in the next three levels, including custom icon options | Questie |
