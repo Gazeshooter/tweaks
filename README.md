@@ -8,17 +8,16 @@ Each `Tweaks_*` directory is a standalone WoW addon with its own `.toc` and chec
 
 | Folder | Function | Extra requirements |
 | --- | --- | --- |
-| `Tweaks_MobReputation` | Shows standing-aware, per-kill mob reputation in tooltips using curated Classic estimates and cautious observed gains | None (TipTac optional) |
-| `Tweaks_MobReputation` | Shows per-kill reputation in mob mouseover tooltips, with standing caps, short faction names and configurable capped display | None (TipTac optional) |\n| `Tweaks_OpenMapTerrain` | Adds an optional terrain-only mode under OpenMap → Settings → Look | OpenMap with API v4+ |
+| `Tweaks_MobReputation` | Shows standing-aware mob reputation per kill in mouseover tooltips; configurable cap behaviour, short faction names and experimental learning | None (TipTac optional) |
+| `Tweaks_OpenMapTerrain` | Adds **Terrain only** to OpenMap's **Look → The map** menu, showing terrain/minimap detail in place of stitched artwork without changing exploration shading or other map options | OpenMap (extension API v4+) |
 | `Tweaks_QuestieChainXP` | Shows quest XP as a percentage of the current level and total follow-up chain XP in Questie map tooltips | Questie |
 | `Tweaks_QuestieLookahead` | Displays quest starters unlocked in the next three levels, including custom icon options | Questie |
-| `Tweaks_QuestieOpenMapIcons` | Keeps Questie's world-map pins visible above OpenMap's stitched artwork, including after redraws | Questie and OpenMap |
-| `Tweaks_TooltipBar` | Hides Blizzard's additional health bar underneath unit tooltips without changing TipTac's own bars | None |
+| `Tweaks_TooltipBar` | Hides Blizzard's additional health bar underneath unit tooltips without changing TipTac's internal bars | None |
 
 ## Installation
 
 1. Copy `Tweaks/` and whichever `Tweaks_*` folders you want into your WoW Forever `Interface/AddOns/` directory.
-2. Remove older standalone copies of the same tweaks (especially `QuestieChainXP`) so they cannot hook Questie twice.
+2. Remove older standalone copies of the same tweaks (especially `QuestieChainXP`) so they cannot hook Questie twice. **Delete any old `Tweaks_QuestieOpenMapIcons/` folder from your local AddOns directory**; deleting it from GitHub does not uninstall a previously installed copy.
 3. Enable or disable the individual modules in the WoW AddOns menu; reload the UI after changing them.
 
 This is **source code**, not a drop-in `Interface/AddOns` directory. Preserve each module's folder name and keep its `.toc` next to its Lua files.
@@ -44,10 +43,23 @@ Tweaks:RegisterSettingsSubcategory("Tweaks_MyFeature", "My Feature", function(ca
 end)
 ```
 
+## OpenMap Terrain only
+
+Install `Tweaks_OpenMapTerrain/` alongside `Tweaks/` and OpenMap. Open the world map, then **OpenMap → Settings → Look → The map → Terrain only**. The toggle is **off by default** and its preference is saved account-wide in `TweaksOpenMapTerrainDB`.
+
+When enabled, it favors the client's minimap/terrain tiles over OpenMap's stitched zone artwork and adds a neutral backing behind that terrain. It does **not** rewrite OpenMap's saved options, exploration darkening/hiding, quest pins, or other layers. It applies to OpenMap's stitched world map, not dungeon/battleground/Blizzard map views. Because this is an OpenMap-specific option, its control stays in **OpenMap's Look tab**, rather than duplicating it under native Tweaks options.
+
+The module uses OpenMap's menu extension API v4+ and temporarily adjusts view-calculation inputs. If a future OpenMap version changes its internal map-rendering API, this module may need an update.
+
+## Questie and OpenMap icon compatibility
+
+**`Tweaks_QuestieOpenMapIcons` has been retired.** OpenMap **v0.8.6** (12 November 2026) fixed Questie 12.8's renamed pin module and icon draw-order resets; **v0.8.7** (12 November 2026) fixed icons hidden behind the artwork on the first zone-map opening. Current OpenMap already performs the pin lifting that our standalone workaround used to do.
+
+Use **OpenMap v0.8.7 or newer** with a compatible Questie release. The fix is based on upstream code/changelogs, not independently verified in a live game session. If icons disappear again, reproduce with the retired addon removed and report the versions and redraw conditions upstream. Earlier OpenMap builds may still exhibit the issue.
+
 ## Compatibility and notes
 
 - Developed against WoW Forever. Questie and OpenMap internal APIs may change between addon releases.
-- `Tweaks_QuestieOpenMapIcons` version 1.1 was verified in-game to restore missing Questie map icons, including with Lookahead and Chain XP enabled, across reloads, zone changes and zooming.
 - The Lookahead module includes a recoloured pfQuest texture. See `Tweaks_QuestieLookahead/PFQUEST_TEXTURE_LICENSE.txt` for the original artwork attribution and MIT licence.
 - The modules patch behaviour at runtime; **no source files in Questie, OpenMap or TipTac are modified**.
 
