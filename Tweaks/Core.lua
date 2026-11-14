@@ -38,6 +38,7 @@ local function registerPage(page)
 
     local child = Settings.RegisterVerticalLayoutSubcategory(parent, page.title)
     Settings.RegisterAddOnCategory(child)
+    page.category = child
     page.registered = true
 
     -- Keep one module's settings error from preventing other modules loading.
@@ -63,9 +64,11 @@ function Tweaks:RegisterSettingsSubcategory(id, title, build)
     return true
 end
 
-function Tweaks:OpenSettings()
-    if parentCategory and Settings and Settings.OpenToCategory then
-        Settings.OpenToCategory(parentCategory:GetID())
+function Tweaks:OpenSettings(id)
+    local child = id and pages[id] and pages[id].category
+    local target = child or parentCategory
+    if target and Settings and Settings.OpenToCategory then
+        Settings.OpenToCategory(target:GetID())
     end
 end
 
