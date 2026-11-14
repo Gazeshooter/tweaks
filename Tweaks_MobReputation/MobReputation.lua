@@ -43,6 +43,9 @@ local function lookupFaction(fid)
 end
 
 local function factionName(fid, info)
+    -- Keep tooltip labels concise; unknown factions retain their full names.
+    local short = ns.ShortFactionNames and ns.ShortFactionNames[fid]
+    if short then return short end
     local name = info and info.name
     return safe(name) and type(name) == "string" and name
         or ns.FallbackFactionNames[fid] or ("Faction " .. fid)
@@ -187,23 +190,26 @@ local function writeTooltip(tooltip, npc)
         local info = lookupFaction(r.fid)
         local standing = reaction(info)
         local name = factionName(r.fid, info)
-        local text, cr, cg, cb
-        if standing and standing >= r.cap or standing == 8 then
-            text = name .. ": no kill rep (cap: " .. standingNames[r.cap] .. ")"
+        local capped = standing and (standing >= r.cap or standing == 8)
+        local amount = capped and 0 or r.amount
+
+        -- Compact format: +5 Timbermaw (Revered).
+        -- The parenthesis is the FIRST standing at which this NPC stops
+        -- granting reputation, not the player's current standing.
+        -- An unknown cap is deliberately omitted rather than guessed.
+        local sign = amount > 0 and "+" or ""
+        local text = sign .. tostring(amount) .. " " .. name
+        local capName = r.cap < 9 and standingNames[r.cap]
+            or (standing == 8 and "Exalted")
+        if capName then text = text .. " (" .. capName .. ")" end
+
+        local cr, cg, cb
+        if capped then
             cr, cg, cb = 0.65, 0.65, 0.65
+        elseif amount < 0 then
+            cr, cg, cb = 0.95, 0.45, 0.45
         else
-            local n = r.amount
-            local sign = n > 0 and "+" or ""
-            text = "Rep: " .. sign .. n .. " " .. name
-                .. " (" .. r.source
-            if r.cap < 9 then text = text .. "; until " .. standingNames[r.cap] end
-            if not standing then text = text .. "; standing unknown" end
-            if info and info.hasBonusRepGain and r.source ~= "observed (solo)" then
-                text = text .. "; bonuses may apply"
-            end
-            text = text .. ")"
-            if n >= 0 then cr, cg, cb = 0.48, 0.86, 0.52
-            else cr, cg, cb = 0.95, 0.45, 0.45 end
+            cr, cg, cb = 0.48, 0.86, 0.52
         end
         tooltip:AddLine(text, cr, cg, cb, true)
     end
