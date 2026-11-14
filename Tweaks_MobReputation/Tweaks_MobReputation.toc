@@ -1,0 +1,12 @@
+## Interface: 16001
+## Title: Tweaks |cffffffffMob Reputation|r
+## Notes: Compact reputation tooltips with standing-aware caps and native AddOns settings.
+## Version: 1.2.0
+## Group: Tweaks
+## Dependencies: Tweaks
+## OptionalDeps: TipTac
+## Category: Other
+## SavedVariablesPerCharacter: TweaksMobReputationDB
+
+Data.lua
+MobReputation.lua

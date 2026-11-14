@@ -1,7 +1,7 @@
 ## Interface: 16001
 ## Title: Tweaks
-## Notes: Modular collection of small WoW Forever fixes and enhancements. Enable the individual modules below.
-## Version: 1.2.0
+## Notes: Modular WoW Forever tweaks with shared native AddOns settings. Modules stay independently toggleable.
+## Version: 1.3.0
 ## Category: Other
 
 Core.lua
